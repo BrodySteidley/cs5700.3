@@ -65,10 +65,6 @@ class ControlPanel(
     }
 
     private fun drive(left: Double, right: Double) {
-        // TODO(student): build one of YOUR Command classes for this action and run it via the API:
-        //     api.perform(MySetVelocityCommand(api.actuator, left, right))
-        // `left` / `right` are the intended track velocities for the button that was pressed
-        // (e.g. Forward = (speed, speed), Left = (turn, -turn)). Design whatever command set you like.
 	api.perform(SetVelocityCommand(api.actuator, left, right))
     }
 
