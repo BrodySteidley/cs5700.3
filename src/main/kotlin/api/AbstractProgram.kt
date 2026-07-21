@@ -17,7 +17,7 @@ import sensor.Sensor
 abstract class AbstractProgram() : RobotProgram {
     abstract override val name: String
 
-    protected class SensorSubscription<T>(val sensor : Sensor<T>, val observer : Observer<T>)
+    protected class SensorSubscription<T>(private val sensor : Sensor<T>, private val observer : Observer<T>)
     {
 	    fun subscribe() = sensor.subscribe(observer)
 	    fun unsubscribe() = sensor.unsubscribe(observer)
