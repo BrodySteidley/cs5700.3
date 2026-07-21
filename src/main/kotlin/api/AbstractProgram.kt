@@ -17,40 +17,36 @@ import sensor.Sensor
 abstract class AbstractProgram() : RobotProgram {
     abstract override val name: String
 
-    protected class SensorSubscription<T>(private val sensor : Sensor<T>, private val observer : Observer<T>)
-    {
-	    fun subscribe() = sensor.subscribe(observer)
-	    fun unsubscribe() = sensor.unsubscribe(observer)
+    protected class SensorSubscription<T>(private val sensor: Sensor<T>, private val observer: Observer<T>) {
+        fun subscribe() = sensor.subscribe(observer)
+        fun unsubscribe() = sensor.unsubscribe(observer)
     }
 
     private val robotSubscriptions = mutableMapOf<RobotApi, List<SensorSubscription<*>>>()
 
-    protected abstract fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
+    protected abstract fun createSensorSubscriptions(robot: RobotApi): List<SensorSubscription<*>>
 
-    override fun startProgram(robot: RobotApi)
-    {
-	    if (robotSubscriptions.containsKey(robot))
-	    	return
+    override fun startProgram(robot: RobotApi) {
+        if (robotSubscriptions.containsKey(robot))
+            return
 
-	    val sensorSubscriptions = createSensorSubscriptions(robot)
-	    
-	    for (sensorSubscription in sensorSubscriptions)
-	    	sensorSubscription.subscribe()
+        val sensorSubscriptions = createSensorSubscriptions(robot)
 
-	    robotSubscriptions[robot] = sensorSubscriptions
+        for (sensorSubscription in sensorSubscriptions)
+            sensorSubscription.subscribe()
+
+        robotSubscriptions[robot] = sensorSubscriptions
     }
 
-    override fun stopProgram(robot: RobotApi)
-    {
-	    val robotSubscription = robotSubscriptions[robot]
-	    if (robotSubscription != null)
-	    {
-		    for (sensorSubscription in robotSubscription)
-		    	sensorSubscription.unsubscribe()
-		    
-		    ActuatorCommandFactory.performStopCommand(robot)
-		    robotSubscriptions.remove(robot)
-	    }
+    override fun stopProgram(robot: RobotApi) {
+        val robotSubscription = robotSubscriptions[robot]
+        if (robotSubscription != null) {
+            for (sensorSubscription in robotSubscription)
+                sensorSubscription.unsubscribe()
+
+            ActuatorCommandFactory.performStopCommand(robot)
+            robotSubscriptions.remove(robot)
+        }
 
     }
 }

@@ -20,49 +20,42 @@ import kotlin.random.Random
 class WanderToBallProgram() : AbstractProgram() {
     override val name: String = "Wander to ball"
 
-    override fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
-    {
-	    var searchedForBall : Boolean = false 
-	    var count : Int = 0
-	    var searchTime : Int = 0
-	    var colliding : Boolean = false
+    override fun createSensorSubscriptions(robot: RobotApi): List<SensorSubscription<*>> {
+        var searchedForBall: Boolean = false
+        var count: Int = 0
+        var searchTime: Int = 0
+        var colliding: Boolean = false
 
-	    val onCollide = Observer<Boolean> { 
-		    colliding = it
+        val onCollide = Observer<Boolean> {
+            colliding = it
 
-		    if (!searchedForBall)
-		    {
-			    if (count < searchTime)
-			    	count++
-			    else
-			    {
-			        ActuatorCommandFactory.performForwardCommand(robot)
-			    	searchedForBall = true
-			    }
-		    }
-		    else if (colliding)
-		    {
-			    ActuatorCommandFactory.performTurnHardRightCommand(robot)
-			    count = 0
-			    searchTime = Random.nextInt(70, 140)
-			    searchedForBall = false
-		    }
-	    }
+            if (!searchedForBall) {
+                if (count < searchTime)
+                    count++
+                else {
+                    ActuatorCommandFactory.performForwardCommand(robot)
+                    searchedForBall = true
+                }
+            } else if (colliding) {
+                ActuatorCommandFactory.performTurnHardRightCommand(robot)
+                count = 0
+                searchTime = Random.nextInt(70, 140)
+                searchedForBall = false
+            }
+        }
 
-	    val onVision = Observer<Color> {
-		    if (it == Color.web("0xe5342bff"))
-		    {
-			    if (!colliding)
-			    {
-			        ActuatorCommandFactory.performForwardCommand(robot)
-				searchedForBall = true
-			    }
-		    }
-	    }
+        val onVision = Observer<Color> {
+            if (it == Color.web("0xe5342bff")) {
+                if (!colliding) {
+                    ActuatorCommandFactory.performForwardCommand(robot)
+                    searchedForBall = true
+                }
+            }
+        }
 
-	    return listOf(
-		    SensorSubscription<Boolean>(robot.sensors.collision, onCollide),
-		    SensorSubscription<Color>(robot.sensors.vision, onVision)
-	    )
+        return listOf(
+            SensorSubscription<Boolean>(robot.sensors.collision, onCollide),
+            SensorSubscription<Color>(robot.sensors.vision, onVision)
+        )
     }
 }

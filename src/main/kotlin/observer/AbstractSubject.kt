@@ -9,15 +9,15 @@ abstract class AbstractSubject<T> : Subject<T> {
     private val observers = mutableSetOf<Observer<T>>()
 
     override fun subscribe(observer: Observer<T>) {
-	    observers += observer
+        observers += observer
     }
 
     override fun unsubscribe(observer: Observer<T>) {
-	    observers -= observer
+        observers -= observer
     }
 
     override fun notifyObservers(value: T) {
-	    for (observer : Observer<T> in observers)
-	    	observer.onUpdate(value)
+        for (observer: Observer<T> in observers)
+            observer.onUpdate(value)
     }
 }

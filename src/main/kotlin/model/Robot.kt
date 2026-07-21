@@ -83,7 +83,7 @@ class Robot(
     private fun collides(center: Vector2, env: Environment): Boolean {
         val b = env.bounds
         val outOfBounds = center.x - radius < b.minX || center.x + radius > b.maxX ||
-            center.y - radius < b.minY || center.y + radius > b.maxY
+                center.y - radius < b.minY || center.y + radius > b.maxY
         if (outOfBounds) return true
         return env.obstacles.any { it.bounds.intersectsCircle(center, radius) }
     }

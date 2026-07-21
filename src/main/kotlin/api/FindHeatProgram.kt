@@ -17,61 +17,48 @@ import sensor.Sensor
 class FindHeatProgram() : AbstractProgram() {
     override val name: String = "Find Heat"
 
-    override fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
-    {
-	    var searching : Boolean = false
-	    var honing : Boolean = false
-	    /* moving = !searching && !honing */
+    override fun createSensorSubscriptions(robot: RobotApi): List<SensorSubscription<*>> {
+        var searching: Boolean = false
+        var honing: Boolean = false
+        /* moving = !searching && !honing */
 
-	    var count : Int = 0
-	    var maxTemp : Double = 0.0
-	    var tooCloseToObstacle : Boolean = false;
-	    val onTemperature = Observer<Double> { 
-		    if (searching)
-		    {
-			    if (count >= 100)
-			    {
-				searching = false
-				honing = true
-				count = 0
-			    }
-			    else
-			    {
-				    if (it > maxTemp && !tooCloseToObstacle)
-					maxTemp = it
+        var count: Int = 0
+        var maxTemp: Double = 0.0
+        var tooCloseToObstacle: Boolean = false;
+        val onTemperature = Observer<Double> {
+            if (searching) {
+                if (count >= 100) {
+                    searching = false
+                    honing = true
+                    count = 0
+                } else {
+                    if (it > maxTemp && !tooCloseToObstacle)
+                        maxTemp = it
 
-				    count++
-			    }
-		    }
-		    else if (honing)
-		    {
-			    if (it >= maxTemp)
-			    {
-				    honing = false;
-				    ActuatorCommandFactory.performForwardCommand(robot)
-			    }
-		    }
-		    else /* moving */
-		    {
-			    if (count >= 100 || tooCloseToObstacle)
-			    {
-				    maxTemp = 0.0
-				    count = 0
-				    searching = true
-				    ActuatorCommandFactory.performTurnSoftRightCommand(robot)
-			    }
-			    else
-			    {
-				    count++;
-			    }
-		    }
-	    }
+                    count++
+                }
+            } else if (honing) {
+                if (it >= maxTemp) {
+                    honing = false;
+                    ActuatorCommandFactory.performForwardCommand(robot)
+                }
+            } else /* moving */ {
+                if (count >= 100 || tooCloseToObstacle) {
+                    maxTemp = 0.0
+                    count = 0
+                    searching = true
+                    ActuatorCommandFactory.performTurnSoftRightCommand(robot)
+                } else {
+                    count++;
+                }
+            }
+        }
 
-	    val onSonar = Observer<Double> { tooCloseToObstacle = (it <= 100.0) }
+        val onSonar = Observer<Double> { tooCloseToObstacle = (it <= 100.0) }
 
-	    return listOf(
-		    SensorSubscription<Double>(robot.sensors.temperature, onTemperature),
-		    SensorSubscription<Double>(robot.sensors.sonar, onSonar)
-	    )
+        return listOf(
+            SensorSubscription<Double>(robot.sensors.temperature, onTemperature),
+            SensorSubscription<Double>(robot.sensors.sonar, onSonar)
+        )
     }
 }

@@ -12,6 +12,9 @@ interface ProgramRegistry {
 /** Provided registry backing the dropdown. */
 class DefaultProgramRegistry : ProgramRegistry {
     private val registered = mutableListOf<RobotProgram>()
-    override fun register(program: RobotProgram) { registered.add(program) }
+    override fun register(program: RobotProgram) {
+        registered.add(program)
+    }
+
     override fun programs(): List<RobotProgram> = registered.toList()
 }

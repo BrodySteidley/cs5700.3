@@ -61,7 +61,9 @@ class SensorTest {
         override val name = "heat"
         override val bounds = Rectangle(0.0, 0.0, 2000.0, 2000.0)
         override val obstacles = emptyList<Obstacle>()
-        override val temperatureField = TemperatureField(Vector2(500.0, 500.0), peak = 100.0, ambient = 10.0, sigma = 100.0)
+        override val temperatureField =
+            TemperatureField(Vector2(500.0, 500.0), peak = 100.0, ambient = 10.0, sigma = 100.0)
+
         override fun startPose() = Pose(500.0, 500.0, 0.0)
     }
 

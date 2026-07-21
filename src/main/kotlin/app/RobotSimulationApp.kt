@@ -97,7 +97,7 @@ class RobotSimulationApp : Application() {
     }
 
     private fun drive(left: Double, right: Double) {
-	api.perform(SetVelocityCommand(api.actuator, left, right))
+        api.perform(SetVelocityCommand(api.actuator, left, right))
     }
 
     private fun switchEnvironment(envClass: Class<*>) {

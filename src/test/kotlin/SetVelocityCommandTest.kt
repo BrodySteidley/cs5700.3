@@ -1,4 +1,3 @@
-
 import command.RobotActuator
 import command.SetVelocityCommand
 import kotlin.test.Test
@@ -6,20 +5,17 @@ import kotlin.test.assertEquals
 
 class SetVelocityCommandTest {
 
-    private class DummyActuator() : RobotActuator
-    {
+    private class DummyActuator() : RobotActuator {
         override var leftTrackVelocity: Double = 0.0
         override var rightTrackVelocity: Double = 0.0
-        override fun setTrackVelocities(left: Double, right: Double)
-        {
+        override fun setTrackVelocities(left: Double, right: Double) {
             leftTrackVelocity = left
             rightTrackVelocity = right
         }
     }
 
     @Test
-    fun `SetVelocityCommand sets velocity`()
-    {
+    fun `SetVelocityCommand sets velocity`() {
         val da = DummyActuator()
         val v = SetVelocityCommand(da, 5.0, 10.0)
         v.execute()
@@ -28,8 +24,7 @@ class SetVelocityCommandTest {
     }
 
     @Test
-    fun `SetVelocityCommand undo sets to previous velocity`()
-    {
+    fun `SetVelocityCommand undo sets to previous velocity`() {
         val da = DummyActuator()
         da.setTrackVelocities(1.0, 1.0)
         val v = SetVelocityCommand(da, 5.0, 10.0)

@@ -12,8 +12,8 @@ package api
  */
 object StudentPrograms {
     fun registerAll(registry: ProgramRegistry) {
-	    registry.register(WanderToBallProgram())
-	    registry.register(FollowLineProgram())
-	    registry.register(FindHeatProgram())
+        registry.register(WanderToBallProgram())
+        registry.register(FollowLineProgram())
+        registry.register(FindHeatProgram())
     }
 }

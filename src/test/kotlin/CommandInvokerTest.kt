@@ -4,13 +4,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class CommandInvokerTest {
-    private class DummyCommand(var state : Int = 0) : Command {
-        override fun execute()
-        {
+    private class DummyCommand(var state: Int = 0) : Command {
+        override fun execute() {
             state = 1
         }
-        override fun undo()
-        {
+
+        override fun undo() {
             state = 2
         }
     }

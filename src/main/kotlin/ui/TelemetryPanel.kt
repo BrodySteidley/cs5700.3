@@ -37,19 +37,16 @@ class TelemetryPanel : VBox(6.0) {
         )
     }
 
-    private class BoolCharLabelObserver(private val label : Label, private val indexInString : Int) : Observer<Boolean>
-    {
-	    init
-	    {
-		    require(indexInString >= 0) { "Index in string must be positive" }
-	    }
+    private class BoolCharLabelObserver(private val label: Label, private val indexInString: Int) : Observer<Boolean> {
+        init {
+            require(indexInString >= 0) { "Index in string must be positive" }
+        }
 
-	    override fun onUpdate(value: Boolean)
-	    {
-		    val chars = label.text.toCharArray()
-		    chars[indexInString] = if (value) 'T' else 'F'
-		    label.text = String(chars)
-	    }
+        override fun onUpdate(value: Boolean) {
+            val chars = label.text.toCharArray()
+            chars[indexInString] = if (value) 'T' else 'F'
+            label.text = String(chars)
+        }
     }
 
     /**
@@ -61,15 +58,15 @@ class TelemetryPanel : VBox(6.0) {
      * AbstractSubject.)
      */
     fun bindTo(robot: Robot) {
-	    robot.sonar.subscribe { sonar.text = it.toString() }
-	    robot.vision.subscribe { vision.text = it.toString() }
-	    robot.temperature.subscribe { temperature.text = "${it.toString()} °F" }
-	    robot.collision.subscribe { collision.text = if (it) "COLLIDING" else "no collision"}
-	    
-	    line.text = "x / x / x"
-	    robot.lineLeft.subscribe(BoolCharLabelObserver(line, 0))
-	    robot.lineCenter.subscribe(BoolCharLabelObserver(line, 4))
-	    robot.lineRight.subscribe(BoolCharLabelObserver(line, 8))
+        robot.sonar.subscribe { sonar.text = it.toString() }
+        robot.vision.subscribe { vision.text = it.toString() }
+        robot.temperature.subscribe { temperature.text = "${it.toString()} °F" }
+        robot.collision.subscribe { collision.text = if (it) "COLLIDING" else "no collision" }
+
+        line.text = "x / x / x"
+        robot.lineLeft.subscribe(BoolCharLabelObserver(line, 0))
+        robot.lineCenter.subscribe(BoolCharLabelObserver(line, 4))
+        robot.lineRight.subscribe(BoolCharLabelObserver(line, 8))
     }
 
     private fun captioned(caption: String, value: Label): VBox =
@@ -80,6 +77,6 @@ class TelemetryPanel : VBox(6.0) {
     private fun styledLabel(text: String, size: Double, bold: Boolean = false, color: String = "#e6edf3"): Label =
         Label(text).apply {
             style = "-fx-font-size: ${size}px; -fx-text-fill: $color;" +
-                if (bold) " -fx-font-weight: bold;" else ""
+                    if (bold) " -fx-font-weight: bold;" else ""
         }
 }

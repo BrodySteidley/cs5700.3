@@ -17,14 +17,25 @@ import sensor.Sensor
 class FollowLineProgram() : AbstractProgram() {
     override val name: String = "Follow Line"
 
-    override fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
-    {
-	    val onLeft  = Observer<Boolean> { ActuatorCommandFactory.performSetVelocityCommand(robot, if (it) 100.0 else 10.0, robot.actuator.rightTrackVelocity) }
-	    val onRight = Observer<Boolean> { ActuatorCommandFactory.performSetVelocityCommand(robot, robot.actuator.leftTrackVelocity, if (it) 100.0 else 10.0) }
+    override fun createSensorSubscriptions(robot: RobotApi): List<SensorSubscription<*>> {
+        val onLeft = Observer<Boolean> {
+            ActuatorCommandFactory.performSetVelocityCommand(
+                robot,
+                if (it) 100.0 else 10.0,
+                robot.actuator.rightTrackVelocity
+            )
+        }
+        val onRight = Observer<Boolean> {
+            ActuatorCommandFactory.performSetVelocityCommand(
+                robot,
+                robot.actuator.leftTrackVelocity,
+                if (it) 100.0 else 10.0
+            )
+        }
 
-	    return listOf(
-		    SensorSubscription<Boolean>(robot.sensors.lineLeft, onLeft),
-		    SensorSubscription<Boolean>(robot.sensors.lineRight, onRight)
-	    )
+        return listOf(
+            SensorSubscription<Boolean>(robot.sensors.lineLeft, onLeft),
+            SensorSubscription<Boolean>(robot.sensors.lineRight, onRight)
+        )
     }
 }

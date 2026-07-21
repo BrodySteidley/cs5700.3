@@ -65,7 +65,7 @@ class ControlPanel(
     }
 
     private fun drive(left: Double, right: Double) {
-	api.perform(SetVelocityCommand(api.actuator, left, right))
+        api.perform(SetVelocityCommand(api.actuator, left, right))
     }
 
     private fun button(text: String, action: () -> Unit) =
@@ -73,7 +73,8 @@ class ControlPanel(
 
     private fun caption(text: String) = Label(text).apply { style = "-fx-text-fill: #c9d1d9;" }
 
-    private fun spacer() = javafx.scene.layout.Region().apply { HBox.setHgrow(this, javafx.scene.layout.Priority.ALWAYS) }
+    private fun spacer() =
+        javafx.scene.layout.Region().apply { HBox.setHgrow(this, javafx.scene.layout.Priority.ALWAYS) }
 
     private fun listCell() = object : javafx.scene.control.ListCell<Environment>() {
         override fun updateItem(item: Environment?, empty: Boolean) {
