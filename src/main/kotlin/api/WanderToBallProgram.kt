@@ -53,7 +53,10 @@ class WanderToBallProgram() : AbstractProgram() {
 		    if (it == Color.web("0xe5342bff"))
 		    {
 			    if (!colliding)
-				    searchedForBall = true
+			    {
+			        ActuatorCommandFactory.performForwardCommand(robot)
+				searchedForBall = true
+			    }
 		    }
 	    }
 
