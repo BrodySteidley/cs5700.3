@@ -1,0 +1,67 @@
+package api
+
+import observer.Observer
+import command.SetVelocityCommand
+import sensor.Sensor
+import javafx.scene.paint.Color
+
+import kotlin.random.Random
+
+/**
+ * A program that drives the robot. Students implement this.
+ *
+ * The program is an Observer: in [startProgram] it subscribes to whichever [RobotApi.sensors] it
+ * needs and issues commands (via the [RobotApi]) in response to their readings; in [stopProgram]
+ * it unsubscribes and typically stops the robot. There is no per-tick callback — a subscribed
+ * sensor notifies every tick, so the sensor stream is the program's control loop.
+ *
+ * Register an instance with a [ProgramRegistry] to make it selectable in the UI's program dropdown.
+ */
+class WanderToBallProgram() : AbstractProgram() {
+    override val name: String = "Wander to ball"
+
+    override fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
+    {
+	    var searchedForBall : Boolean = false 
+	    var count : Int = 0
+	    var searchTime : Int = 0
+	    var colliding : Boolean = false
+	    var sawBall : Boolean = false
+
+	    val onCollide = Observer<Boolean> { 
+		    colliding = it
+
+		    if (!searchedForBall)
+		    {
+			    if (count < searchTime)
+			    	count++
+			    else
+			    	searchedForBall = true
+		    }
+		    else
+		    {
+			    robot.perform(SetVelocityCommand(robot.actuator, 100.0, if (colliding) -100.0 else 100.0))
+			    if (colliding)
+			    {
+				    searchTime = Random.nextInt(70, 140)
+			    	    if (count == 0) searchedForBall = false
+			    }
+			    else
+			    	count = 0
+		    }
+	    }
+
+	    val onVision = Observer<Color> {
+		    if (it == Color.web("0xe5342bff"))
+		    {
+			    if (!colliding)
+				    searchedForBall = true
+		    }
+	    }
+
+	    return listOf(
+		    SensorSubscription<Boolean>(robot.sensors.collision, onCollide),
+		    SensorSubscription<Color>(robot.sensors.vision, onVision)
+	    )
+    }
+}

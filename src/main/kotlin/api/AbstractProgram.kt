@@ -1,0 +1,59 @@
+package api
+
+import observer.Observer
+import command.SetVelocityCommand
+import sensor.Sensor
+
+/**
+ * A program that drives the robot. Students implement this.
+ *
+ * The program is an Observer: in [startProgram] it subscribes to whichever [RobotApi.sensors] it
+ * needs and issues commands (via the [RobotApi]) in response to their readings; in [stopProgram]
+ * it unsubscribes and typically stops the robot. There is no per-tick callback — a subscribed
+ * sensor notifies every tick, so the sensor stream is the program's control loop.
+ *
+ * Register an instance with a [ProgramRegistry] to make it selectable in the UI's program dropdown.
+ */
+abstract class AbstractProgram() : RobotProgram {
+    abstract override val name: String
+
+    protected class SensorSubscription<T>(val sensor : Sensor<T>, val observer : Observer<T>)
+    {
+	    fun subscribe() = sensor.subscribe(observer)
+	    fun unsubscribe() = sensor.unsubscribe(observer)
+    }
+
+    protected var robotSubscriptions = mutableMapOf<RobotApi, List<SensorSubscription<*>>>()
+
+    abstract protected fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
+
+    override fun startProgram(robot: RobotApi)
+    {
+	    if (robotSubscriptions.containsKey(robot))
+	    	return
+	
+	    val onLeft  = Observer<Boolean> { robot.perform(SetVelocityCommand(robot.actuator, if (it) 100.0 else 10.0, robot.actuator.rightTrackVelocity)) }
+	    val onRight = Observer<Boolean> { robot.perform(SetVelocityCommand(robot.actuator, robot.actuator.leftTrackVelocity, if (it) 100.0 else 10.0)) }
+	    
+	    val sensorSubscriptions = createSensorSubscriptions(robot)
+	    
+	    for (sensorSubscription in sensorSubscriptions)
+	    	sensorSubscription.subscribe()
+
+	    robotSubscriptions[robot] = sensorSubscriptions
+    }
+
+    override fun stopProgram(robot: RobotApi)
+    {
+	    val robotSubscription = robotSubscriptions[robot]
+	    if (robotSubscription != null)
+	    {
+		    for (sensorSubscription in robotSubscription)
+		    	sensorSubscription.unsubscribe()
+		    
+		    robot.perform(SetVelocityCommand(robot.actuator, 0.0, 0.0))
+		    robotSubscriptions.remove(robot)
+	    }
+
+    }
+}

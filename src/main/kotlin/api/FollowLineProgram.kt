@@ -2,6 +2,7 @@ package api
 
 import observer.Observer
 import command.SetVelocityCommand
+import sensor.Sensor
 
 /**
  * A program that drives the robot. Students implement this.
@@ -13,25 +14,17 @@ import command.SetVelocityCommand
  *
  * Register an instance with a [ProgramRegistry] to make it selectable in the UI's program dropdown.
  */
-class FollowLineProgram() : RobotProgram {
+class FollowLineProgram() : AbstractProgram() {
     override val name: String = "Follow Line"
 
-    private lateinit var onLeft: (Boolean) -> Unit
-    private lateinit var onRight: (Boolean) -> Unit
-
-    override fun startProgram(robot: RobotApi)
+    override fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
     {
-	    onLeft = { robot.perform(SetVelocityCommand(robot.actuator, if (it) 100.0 else 10.0, robot.actuator.rightTrackVelocity)) }
-	    onRight = { robot.perform(SetVelocityCommand(robot.actuator, robot.actuator.leftTrackVelocity, if (it) 100.0 else 10.0)) }
-	    
-	    robot.sensors.lineLeft.subscribe(onLeft)
-	    robot.sensors.lineRight.subscribe(onRight)
-    }
+	    val onLeft  = Observer<Boolean> { robot.perform(SetVelocityCommand(robot.actuator, if (it) 100.0 else 10.0, robot.actuator.rightTrackVelocity)) }
+	    val onRight = Observer<Boolean> { robot.perform(SetVelocityCommand(robot.actuator, robot.actuator.leftTrackVelocity, if (it) 100.0 else 10.0)) }
 
-    override fun stopProgram(robot: RobotApi)
-    {
-	    robot.sensors.lineLeft.unsubscribe(onLeft)
-	    robot.sensors.lineRight.unsubscribe(onRight)
-	    robot.perform(SetVelocityCommand(robot.actuator, 0.0, 0.0))
+	    return listOf(
+		    SensorSubscription<Boolean>(robot.sensors.lineLeft, onLeft),
+		    SensorSubscription<Boolean>(robot.sensors.lineRight, onRight)
+	    )
     }
 }

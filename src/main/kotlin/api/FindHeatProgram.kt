@@ -2,6 +2,7 @@ package api
 
 import observer.Observer
 import command.SetVelocityCommand
+import sensor.Sensor
 
 /**
  * A program that drives the robot. Students implement this.
@@ -13,21 +14,62 @@ import command.SetVelocityCommand
  *
  * Register an instance with a [ProgramRegistry] to make it selectable in the UI's program dropdown.
  */
-class FindHeatProgram() : RobotProgram {
+class FindHeatProgram() : AbstractProgram() {
     override val name: String = "Find Heat"
 
-    override fun startProgram(robot: RobotApi)
+    override fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
     {
-	    robot.sensors.lineCenter.subscribe(
-		Observer<Boolean> { seesLine -> robot.perform(SetVelocityCommand(robot.actuator, 50.0, 50.0)) }
-	    )
-	    robot.sensors.lineRight.subscribe(
-		Observer<Boolean> { seesLine -> if (!seesLine) robot.perform(SetVelocityCommand(robot.actuator, 0.0, 90.0)) }
-	    )
-    }
+	    var searching : Boolean = false
+	    var honing : Boolean = false
+	    /* moving = !searching && !honing */
 
-    override fun stopProgram(robot: RobotApi)
-    {
-	    //robot.lineLeft.unsubscribe(onLeft)
+	    var count : Int = 0
+	    var maxTemp : Double = 0.0
+	    var tooCloseToObstacle : Boolean = false;
+	    val onTemperature = Observer<Double> { 
+		    if (searching)
+		    {
+			    if (count >= 100)
+			    {
+				searching = false
+				honing = true
+				count = 0
+			    }
+			    else
+			    {
+				    if (it > maxTemp && !tooCloseToObstacle)
+					maxTemp = it
+
+				    count++
+			    }
+		    }
+		    else if (honing)
+		    {
+			    if (it >= maxTemp)
+				    honing = false;
+		    }
+		    else /* moving */
+		    {
+			    if (count >= 100 || tooCloseToObstacle)
+			    {
+				    maxTemp = 0.0
+				    count = 0
+				    searching = true
+				    robot.perform(SetVelocityCommand(robot.actuator, 100.0, -30.0))
+			    }
+			    else
+			    {
+				    count++;
+				    robot.perform(SetVelocityCommand(robot.actuator, 100.0, 100.0))
+			    }
+		    }
+	    }
+
+	    val onSonar = Observer<Double> { tooCloseToObstacle = (it <= 100.0) }
+
+	    return listOf(
+		    SensorSubscription<Double>(robot.sensors.temperature, onTemperature),
+		    SensorSubscription<Double>(robot.sensors.sonar, onSonar)
+	    )
     }
 }
