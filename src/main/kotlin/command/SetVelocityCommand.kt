@@ -11,8 +11,6 @@ class SetVelocityCommand(
 ) : Command {
     override fun execute()
     {
-	    prevLeft = left
-	    prevRight = right
 	    actuator.setTrackVelocities(left, right);
     }
     override fun undo()
