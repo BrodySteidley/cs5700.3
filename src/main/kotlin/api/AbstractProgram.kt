@@ -1,7 +1,7 @@
 package api
 
 import observer.Observer
-import command.SetVelocityCommand
+import command.ActuatorCommandFactory
 import sensor.Sensor
 
 /**
@@ -23,7 +23,7 @@ abstract class AbstractProgram() : RobotProgram {
 	    fun unsubscribe() = sensor.unsubscribe(observer)
     }
 
-    protected var robotSubscriptions = mutableMapOf<RobotApi, List<SensorSubscription<*>>>()
+    private val robotSubscriptions = mutableMapOf<RobotApi, List<SensorSubscription<*>>>()
 
     protected abstract fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
 
@@ -48,7 +48,7 @@ abstract class AbstractProgram() : RobotProgram {
 		    for (sensorSubscription in robotSubscription)
 		    	sensorSubscription.unsubscribe()
 		    
-		    robot.perform(SetVelocityCommand(robot.actuator, 0.0, 0.0))
+		    ActuatorCommandFactory.performStopCommand(robot)
 		    robotSubscriptions.remove(robot)
 	    }
 

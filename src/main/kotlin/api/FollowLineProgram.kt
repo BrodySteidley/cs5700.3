@@ -1,7 +1,7 @@
 package api
 
 import observer.Observer
-import command.SetVelocityCommand
+import command.ActuatorCommandFactory
 import sensor.Sensor
 
 /**
@@ -19,8 +19,8 @@ class FollowLineProgram() : AbstractProgram() {
 
     override fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
     {
-	    val onLeft  = Observer<Boolean> { robot.perform(SetVelocityCommand(robot.actuator, if (it) 100.0 else 10.0, robot.actuator.rightTrackVelocity)) }
-	    val onRight = Observer<Boolean> { robot.perform(SetVelocityCommand(robot.actuator, robot.actuator.leftTrackVelocity, if (it) 100.0 else 10.0)) }
+	    val onLeft  = Observer<Boolean> { ActuatorCommandFactory.performSetVelocityCommand(robot, if (it) 100.0 else 10.0, robot.actuator.rightTrackVelocity) }
+	    val onRight = Observer<Boolean> { ActuatorCommandFactory.performSetVelocityCommand(robot, robot.actuator.leftTrackVelocity, if (it) 100.0 else 10.0) }
 
 	    return listOf(
 		    SensorSubscription<Boolean>(robot.sensors.lineLeft, onLeft),

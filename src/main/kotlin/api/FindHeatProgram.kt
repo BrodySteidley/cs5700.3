@@ -1,7 +1,7 @@
 package api
 
 import observer.Observer
-import command.SetVelocityCommand
+import command.ActuatorCommandFactory
 import sensor.Sensor
 
 /**
@@ -46,7 +46,10 @@ class FindHeatProgram() : AbstractProgram() {
 		    else if (honing)
 		    {
 			    if (it >= maxTemp)
+			    {
 				    honing = false;
+				    ActuatorCommandFactory.performForwardCommand(robot)
+			    }
 		    }
 		    else /* moving */
 		    {
@@ -55,12 +58,11 @@ class FindHeatProgram() : AbstractProgram() {
 				    maxTemp = 0.0
 				    count = 0
 				    searching = true
-				    robot.perform(SetVelocityCommand(robot.actuator, 100.0, -30.0))
+				    ActuatorCommandFactory.performTurnSoftRightCommand(robot)
 			    }
 			    else
 			    {
 				    count++;
-				    robot.perform(SetVelocityCommand(robot.actuator, 100.0, 100.0))
 			    }
 		    }
 	    }

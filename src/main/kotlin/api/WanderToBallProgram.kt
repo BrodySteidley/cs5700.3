@@ -1,7 +1,7 @@
 package api
 
 import observer.Observer
-import command.SetVelocityCommand
+import command.ActuatorCommandFactory
 import sensor.Sensor
 import javafx.scene.paint.Color
 
@@ -26,7 +26,6 @@ class WanderToBallProgram() : AbstractProgram() {
 	    var count : Int = 0
 	    var searchTime : Int = 0
 	    var colliding : Boolean = false
-	    var sawBall : Boolean = false
 
 	    val onCollide = Observer<Boolean> { 
 		    colliding = it
@@ -36,18 +35,17 @@ class WanderToBallProgram() : AbstractProgram() {
 			    if (count < searchTime)
 			    	count++
 			    else
-			    	searchedForBall = true
-		    }
-		    else
-		    {
-			    robot.perform(SetVelocityCommand(robot.actuator, 100.0, if (colliding) -100.0 else 100.0))
-			    if (colliding)
 			    {
-				    searchTime = Random.nextInt(70, 140)
-			    	    if (count == 0) searchedForBall = false
+			        ActuatorCommandFactory.performForwardCommand(robot)
+			    	searchedForBall = true
 			    }
-			    else
-			    	count = 0
+		    }
+		    else if (colliding)
+		    {
+			    ActuatorCommandFactory.performTurnHardRightCommand(robot)
+			    count = 0
+			    searchTime = Random.nextInt(70, 140)
+			    searchedForBall = false
 		    }
 	    }
 
