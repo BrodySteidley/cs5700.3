@@ -9,16 +9,14 @@ class SetVelocityCommand(
 	val left : Double,
 	val right : Double,
 ) : Command {
-	val prevLeft : Double
-	val prevRight : Double
-    fun execute()
+    override fun execute()
     {
 	    prevLeft = left
 	    prevRight = right
 	    actuator.setTrackVelocities(left, right);
     }
-    fun undo()
+    override fun undo()
     {
-	    actuator.setTrackVelocities(prevLeft, p:evRight);
+	    actuator.setTrackVelocities(-left, -right);
     }
 }
