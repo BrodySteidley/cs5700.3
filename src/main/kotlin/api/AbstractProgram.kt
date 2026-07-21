@@ -25,16 +25,13 @@ abstract class AbstractProgram() : RobotProgram {
 
     protected var robotSubscriptions = mutableMapOf<RobotApi, List<SensorSubscription<*>>>()
 
-    abstract protected fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
+    protected abstract fun createSensorSubscriptions(robot : RobotApi) : List<SensorSubscription<*>>
 
     override fun startProgram(robot: RobotApi)
     {
 	    if (robotSubscriptions.containsKey(robot))
 	    	return
-	
-	    val onLeft  = Observer<Boolean> { robot.perform(SetVelocityCommand(robot.actuator, if (it) 100.0 else 10.0, robot.actuator.rightTrackVelocity)) }
-	    val onRight = Observer<Boolean> { robot.perform(SetVelocityCommand(robot.actuator, robot.actuator.leftTrackVelocity, if (it) 100.0 else 10.0)) }
-	    
+
 	    val sensorSubscriptions = createSensorSubscriptions(robot)
 	    
 	    for (sensorSubscription in sensorSubscriptions)
