@@ -1,16 +1,13 @@
 package command
 
-/**
- * The Command pattern: an action encapsulated as an object. [execute] performs it;
- * [undo] reverses whatever state [execute] changed.
- */
+
 class SetVelocityCommand(
-	val actuator : RobotActuator,
-	val left : Double,
-	val right : Double,
+	private val actuator : RobotActuator,
+	private val left : Double,
+	private val right : Double,
 ) : Command {
-	var prevLeft : Double = 0.0;
-	var prevRight : Double = 0.0;
+	private var prevLeft : Double = 0.0;
+	private var prevRight : Double = 0.0;
 
     override fun execute()
     {
