@@ -1,7 +1,7 @@
 
 # Observer and Command pattern for OOP class
 
-Compile:
+Compile and run:
 ```
 ./gradlew run
 ```
