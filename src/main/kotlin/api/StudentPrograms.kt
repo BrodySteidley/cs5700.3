@@ -15,6 +15,7 @@ package api
  */
 object StudentPrograms {
     fun registerAll(registry: ProgramRegistry) {
-        // TODO(student): register your RobotProgram implementations here.
+	    registry.register(FollowLineProgram())
+	    registry.register(FindHeatProgram())
     }
 }

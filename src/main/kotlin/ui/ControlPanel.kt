@@ -10,6 +10,8 @@ import javafx.scene.control.Label
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 
+import command.SetVelocityCommand
+
 /**
  * Manual controller. Each drive button should build one of YOUR command classes and submit it
  * through the [RobotApi] — so manual driving shares the same undoable action path as a program.
@@ -67,6 +69,7 @@ class ControlPanel(
         //     api.perform(MySetVelocityCommand(api.actuator, left, right))
         // `left` / `right` are the intended track velocities for the button that was pressed
         // (e.g. Forward = (speed, speed), Left = (turn, -turn)). Design whatever command set you like.
+	api.perform(SetVelocityCommand(api.actuator, left, right))
     }
 
     private fun button(text: String, action: () -> Unit) =

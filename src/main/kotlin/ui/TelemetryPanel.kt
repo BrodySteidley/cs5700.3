@@ -5,6 +5,9 @@ import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import model.Robot
 
+import javafx.scene.paint.Color
+import observer.Observer
+
 /**
  * A live readout of the sensor values — the *consumer* side of the Observer pattern.
  *
@@ -34,6 +37,21 @@ class TelemetryPanel : VBox(6.0) {
         )
     }
 
+    private class BoolCharLabelObserver(private val label : Label, private val indexInString : Int) : Observer<Boolean>
+    {
+	    init
+	    {
+		    require(indexInString >= 0) { "Index in string must be positive" }
+	    }
+
+	    override fun onUpdate(value: Boolean)
+	    {
+		    val chars = label.text.toCharArray()
+		    chars[indexInString] = if (value) 'T' else 'F'
+		    label.text = String(chars)
+	    }
+    }
+
     /**
      * Subscribe observers to the given robot's sensors so the labels update live. Called whenever
      * the robot is (re)created — on startup, environment change, and reset.
@@ -47,7 +65,15 @@ class TelemetryPanel : VBox(6.0) {
      * AbstractSubject.)
      */
     fun bindTo(robot: Robot) {
-        // TODO(student): subscribe observers to robot's sensors (see the doc comment above).
+	    robot.sonar.subscribe { sonar.text = it.toString() }
+	    robot.vision.subscribe { vision.text = it.toString() }
+	    robot.temperature.subscribe { temperature.text = "${it.toString()} °F" }
+	    robot.collision.subscribe { collision.text = if (it) "COLLIDING" else "no collision"}
+	    
+	    line.text = "x / x / x"
+	    robot.lineLeft.subscribe(BoolCharLabelObserver(line, 0))
+	    robot.lineCenter.subscribe(BoolCharLabelObserver(line, 4))
+	    robot.lineRight.subscribe(BoolCharLabelObserver(line, 8))
     }
 
     private fun captioned(caption: String, value: Label): VBox =
